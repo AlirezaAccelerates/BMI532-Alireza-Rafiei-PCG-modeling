@@ -1,4 +1,4 @@
-# BMI500 
+# BMI532
 
 This is my repo for the BMI 532 course in spring 2023 homework and final project. \
 Please reach out alireza.rafiei@emory.edu. \
