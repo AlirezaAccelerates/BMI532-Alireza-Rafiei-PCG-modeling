@@ -10,7 +10,7 @@
 \date{}
 \begin{document}
 \title{\LARGE \bf
-How synthetic data can enhance the performance of machine learning models in the healthcare domain: A murmur detection case study}
+How synthetic data can enhance the performance of machine learning models in the healthcare domain: A heart murmur detection case study}
 
 
 \author[1]{Alireza Rafiei\thanks{alireza.rafiei@emory.edu}}
@@ -20,7 +20,9 @@ How synthetic data can enhance the performance of machine learning models in the
 \maketitle
 
 \begin{abstract}
-    This is where you write your abstract.
+
+Heart murmurs require timely detection and accurate diagnosis to facilitate effective clinical decision-making. Machine learning approaches are replacing traditional methods to detect heart murmurs to prevent variability and subjectivity in clinical decisions and the need for experienced healthcare professionals. However, the scarcity of large-scale and well-labeled data for heart murmur detection poses a significant challenge to the development of robust and accurate automated models. This technical report investigates the role of synthetic data in enhancing the performance of machine learning models for murmur detection. In this regard, we first manipulated 3,163 publicly available phonocardiography (PCG) records from the CirCor DigiScope PCG dataset to generate synthetic data. We added background noise that mimicked real hospital sounds and modified the signal-to-noise ratio of the records to create this synthetic data. Subsequently, we developed four distinct machine learning models, training each one using the original dataset and then using a combination of the original and synthetic datasets. The developed InceptionTime model achieved a 0.774 accuracy and 0.691 AUC once training on the combined data as the best scenario. Our findings demonstrate that generating synthetic data for the development of machine learning algorithms can improve their performance.
+
 \end{abstract}
 
 
@@ -49,15 +51,16 @@ valve, mitral valve, and tricuspid valve. Nonetheless, some patients had fewer t
 
 
 \subsection{Pre-processing}
-The PCG recordings were divided into segments of 3 seconds each, using a sliding window technique without overlapping. To represent each segment, a two-dimensional image was created using the logarithmic Mel spectrogram technique. The spectrogram was calculated using the same parameters as in the previous study \cite{elola2022beyond}, including Hamming windows of 25 milliseconds with 50\% overlap and FFT of 512 points in the frequency range 0-800Hz. This frequency range was chosen because murmurs are not typically present in higher frequencies \cite{mcgee2018auscultation}. After applying the Mel filter bank, 32 values were obtained for each frame.
-The final representation of every 3-second heard signal recording segment is a 32x240 matrix. The Mel spectrogram depiction of the PCG was opted for this study since it is widely recognized by the audio processing community for its similarity to human hearing. To train the machine learning models, labels were generated for the recording level from the available patient-level label. In this regard, the labels for each recording were assumed to be the same as the patient-level label. The analysis windows for each recording then adopted the label assigned at the recording level.
+The PCG recordings were divided into segments of 3 seconds each, using a sliding window technique without overlapping. To represent each segment, a two-dimensional image was created using the logarithmic Mel spectrogram technique. The spectrogram was calculated using the same parameters as in the previous study \cite{elola2022beyond}, including Hamming windows of 25 milliseconds with 50\% overlap and FFT of 512 points in the frequency range 0-800Hz. This frequency range was chosen because murmurs are not typically present in higher frequencies \cite{mcgee2018auscultation}. After applying the Mel filter bank, 32 values were obtained for each frame. Figure \ref{fig:PP} demonstrates the applied pre-processing workflow on the raw PCG data.
+
+\par The final representation of every 3-second heard signal recording segment is a 32x240 matrix. The Mel spectrogram depiction of the PCG was opted for this study since it is widely recognized by the audio processing community for its similarity to human hearing. To train the machine learning models, labels were generated for the recording level from the available patient-level label. In this regard, the labels for each recording were assumed to be the same as the patient-level label. The analysis windows for each recording then adopted the label assigned at the recording level.
 
 
 \begin{figure}
 \centering
     \includegraphics[width=0.4\textwidth]{Documents/preprecessing.jpg}
     \caption{Pre-processing workflow.}
-    \label{tab:PP}
+    \label{fig:PP}
 
 \end{figure}
 
@@ -67,12 +70,15 @@ hospital sound
 
 
 
-We calculated the results for the Kullback-Leibler divergence, total variation distance, and Hellinger distance for the two synthetic datasets generated from the original dataset to quantify the dissimilarity between two probability distributions, with lower values indicating a closer resemblance. Upon analyzing the KL divergence values of the two synthetic datasets generated from the original dataset, the amplitude phase altering dataset (0.0957) is more similar to the original dataset than the randomized group delays dataset (0.6685), indicating that the method employed for the amplitude phase altering data generation better preserves the underlying distribution. Similarly, amplitude phase altering dataset (0.0957) has a lower total variation distance compared to the randomized group delays dataset (0.1877), suggesting that this synthetic dataset more closely approximates the original dataset in terms of the probability distribution. The amplitude phase altering dataset also exhibits a smaller Hellinger Distance (0.1010) than the randomized group delays (0.2493), reinforcing that this data is more similar to the original dataset. Across all three measures, synthetic data of the amplitude phase altering technique consistently resembles the original dataset more closely than synthetic data of the randomized group delays approach. This suggests that the first data generation method  is more effective in preserving the original data distribution.
+We calculated the results for the Kullback-Leibler divergence, total variation distance, and Hellinger distance for the two synthetic datasets generated from the original dataset to quantify the dissimilarity between two probability distributions, with lower values indicating a closer resemblance (Tabel \ref {tab:GD}). Upon analyzing the KL divergence values of the two synthetic datasets generated from the original dataset, the amplitude phase altering dataset (0.0957) was more similar to the original dataset than the randomized group delays dataset (0.6685), indicating that the method employed for the amplitude phase altering data generation better preserves the underlying distribution. Similarly, amplitude phase altering dataset (0.0957) had a lower total variation distance compared to the randomized group delays dataset (0.1877), suggesting that this synthetic dataset more closely approximates the original dataset in terms of the probability distribution. The amplitude phase altering dataset also exhibited a smaller Hellinger Distance (0.1010) than the randomized group delays (0.2493), reinforcing that this data was more similar to the original dataset. Across all three measures, synthetic data of the amplitude phase altering technique consistently resembled the original dataset more closely than synthetic data of the randomized group delays approach. This suggested that the first data generation method was more effective in preserving the original data distribution.
+
+\par The probability density function (PDF) and cumulative density function (CDF) are depicted in Figures \ref{fig:PD} and \ref{fig:CP}, respectively, representing the power spectra for all recordings following the pre-processing steps. The PDF was calculated to display the relative frequency of each possible power spectrum in the original dataset and the two synthetically generated datasets. The original dataset and the amplitude phase-adjusted dataset exhibited nearly normal distributions, whereas the random group delays dataset demonstrated a skewed distribution across power spectra. The CDF plot represented a smooth, increasing, sigmoid-shaped curve for all three datasets. As clearly can be seen, the probability of a higher power spectrum occurrence in the randomized group delay dataset was higher than in the two other datasets. Of note, the cumulative probability of a 60 dB power spectrum is less than 0.4 for the randomized group delay dataset, whereas it exceeds 0.6 for both the original and amplitude phase-adjusted datasets..
+
 
 \begin{table}
 \centering
-\caption{xxx}
-\begin{tabular}{|l|l|l|l|}
+\caption{Similarity analysis between the two generated synthetic datasets and the original dataset.}
+\begin{tabular}{|l|c|c|c|}
 \hline
 Dataset                  & Kullback-Leibler divergence                & Total Variation Distance & Hellinger Distance \\ \hline
 Amplitude phase altering & 0.0957                                     & 0.0696                   & 0.1010             \\ \hline
@@ -83,8 +89,8 @@ Randomized group delays   & 0.6685  & 0.1877                   & 0.2493  \\ \hli
 \begin{figure}
 \centering
     \includegraphics[width=1\textwidth]{Documents/Generated data.jpg}
-    \caption{xxx.}
-    \label{tab:GD}
+    \caption{Random examples of the three classes for different datasets.}
+    \label{fig:GD}
 
 \end{figure}
 
@@ -92,8 +98,8 @@ Randomized group delays   & 0.6685  & 0.1877                   & 0.2493  \\ \hli
 \begin{figure}
 \centering
     \includegraphics[width=0.6\textwidth]{Documents/pd.jpg}
-    \caption{xxx}
-    \label{tab:PD}
+    \caption{Probability density of power spectra across all recordings for the three datasets.}
+    \label{fig:PD}
 
 \end{figure}
 
@@ -101,38 +107,32 @@ Randomized group delays   & 0.6685  & 0.1877                   & 0.2493  \\ \hli
 \begin{figure}
 \centering
     \includegraphics[width=0.6\textwidth]{Documents/cp.jpg}
-    \caption{xxx.}
-    \label{tab:CP}
+    \caption{Cumulative probability of power spectra across all recordings for the three datasets.}
+    \label{fig:CP}
 
 \end{figure}
 
 \subsection{Learning models}
-In order to assess the effectiveness of the synthetic data approach, we examined the performance metrics of four distinct machine learning models: a basic two-layer Convolutional Neural Network (CNN), EfficientNetB0, VGG-16, and DeepConvNet. The simple CNN model comprising two CNN layers, followed by a max-pooling layer and a fully connected layer, was utilized as a baseline model. Additionally, we implemented both shallow and deep pre-trained CNN models by freezing the convolutional blocks and appending new fully connected layers.
+In order to assess the effectiveness of the synthetic data approach, we examined the performance metrics of four distinct machine learning models: a basic two-layer Convolutional Neural Network (CNN), DeepConvNet, VGG-16, and InceptionTime. The simple CNN model comprising two CNN layers, followed by a max-pooling layer and a fully connected layer, was utilized as a baseline model. Additionally, we implemented both shallow and deep pre-trained CNN models by freezing the convolutional blocks and appending new fully connected layers.
 
-\par The VGG-16 architecture has been widely adopted and recognized as a seminal work for its remarkable performance in image classification tasks \cite{simonyan2014very}. It comprises 16 weight layers, including 13 convolutional layers and three fully connected layers. We froze the convolutional layers and retrained three fully connected layers with 1024, 256, and 64 neurons and a dropout rate of 20\%. EfficientNetB0 comprises a series of inverted residual blocks, each followed by batch normalization and a Swish activation function \cite{tan2019efficientnet}. The architecture incorporates a depthwise separable convolution, which significantly reduces the number of parameters and computational costs compared to traditional convolutional layers. To adapt this model, we introduced two fully connected layers with 256 and 64 neurons, respectively, at the end of the architecture.
+\par The DeepConvNet model \cite{schirrmeister2017deep} proposed to enhance the analysis of electroencephalogram (EEG) signals by leveraging the hierarchical structure of CNNs. DeepConvNet's architecture consists of alternating convolutional and pooling layers, followed by fully connected layers and a final softmax layer for classification. We kept the same number of fully-connected layers and neurons (2 layers with 1000 and 500 neurons, respectively) of the proposed architecture for training the model. The VGG-16 architecture has been widely adopted and recognized as a seminal work for its remarkable performance in image classification tasks \cite{simonyan2014very}. It comprises 16 weight layers, including 13 convolutional layers and three fully connected layers. We froze the convolutional layers and retrained three fully connected layers with 1024, 256, and 64 neurons and a dropout rate of 20\%. InceptionTime is a sophisticated ensemble of CNNs designed to adeptly learn and distinguish between local and global shape patterns \cite{rafiei2022automated}. The architecture comprises six Inception blocks, each containing parallel convolutional layers with three kernel sizes, allowing the model to learn different time-scale features simultaneously. The outputs of these parallel layers are concatenated and passed through a residual connection, mitigating the vanishing gradient problem. In the training phase, we set the bottleneck hyperparameter to 32.
 
 
 \section{Results}
-CNN
-CNN-LSTM
-DeepConv
-Efficientnet
-NASNetMobile
-MobileNetV2
-VGG16
-inceptiontime
 
 
 
 \begin{table}[]
-\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|}
+\centering
+\caption{Performance metrics of the four developed models using raw and synthetic data on the test dataset.}
+\begin{tabular}{|l|c|c|c|c|c|c|c|c|c|c|} 
 \hline
-\multicolumn{1}{|c|}{\multirow{2}{*}{Models}} & \multicolumn{5}{c|}{Row data} & \multicolumn{5}{c|}{Synthetic data} \\ \cline{2-11} 
-\multicolumn{1}{|c|}{}                        & AUC  & Accu  & F1 & Sen & Spe & AUC   & Accu   & F1   & Sen  & Spe  \\ \hline
-CNN                                           &      &       &    &     &     &       &        &      &      &      \\ \hline
-EfficientNetB0                                &      &       &    &     &     &       &        &      &      &      \\ \hline
-VGG-16                                        &      &       &    &     &     &       &        &      &      &      \\ \hline
-DeepConvNet                                   &      &       &    &     &     &       &        &      &      &      \\ \hline
+\multicolumn{1}{|c|}{\multirow{2}{*}{Models}} & \multicolumn{5}{c|}{Raw data} & \multicolumn{5}{c|}{Synthetic data} \\ \cline{2-11} 
+\multicolumn{1}{|c|}{}                        & AUC  & Acc  & F1 & Sen & Spe & AUC   & Acc   & F1   & Sen  & Spe  \\ \hline
+DeepConvNet                                          &0.499      &0.766       &0.665    &0.767     &0.333     &0.500       &0.766        &0.665      &0.767      &0.333      \\ \hline
+CNN                                &      0.526&       0.732&    0.676&     0.732&     0.336&       0.563&        0.753&      0.719&      0.754& 0.382      \\ \hline
+VGG-16                                        & 0.652      &0.762       &0.744    &0.762     &0.439     &0.660       &0.762        &0.745      &0.762      &0.464      \\ \hline
+InceptionTime                                   & 0.673      &0.769       &0.761    &0.770     &0.493     &0.691       &0.774        &0.769      &0.775      &0.539 \\ \hline
 \end{tabular}
 \end{table}
 
@@ -141,6 +141,15 @@ DeepConvNet                                   &      &       &    &     &     & 
 
 %considering real-world situations for the model
 %one reason that ML models are not good in the real-world scenario
+
+\subsection{Limitation}
+Using synthetic data in healthcare comes with several limitations that need to be carefully considered. One of the limitations of synthetic data is the potential loss of subtle patterns and relationships present in real-world healthcare data. In our case study, the generated synthetic data may fail to capture the intricate complexities of the original data, at least in one of the time or frequency domains. For example, the synthetic instances are easily distinguishable in the time domain, while they can preserve more the subtle patterns of the original data in the frequency domain.
+
+\par The performance of the developed machine learning models is significantly influenced by the configuration and size of the dataset used for generating synthetic data. Modifying the SNR and SIR parameters of the synthetic data generator filters or adjusting the quantity of synthetic data used for training the machine learning models may lead to different results. Furthermore, due to the randomized nature of the synthetic data generator filters and the train-test split, different trials may yield varying outcomes. Therefore, it is crucial to consider conducting multiple trials using cross-validation techniques in future studies.
+
+\par In this study, we evaluated four machine learning models, but other pre-trained or custom-developed models could potentially yield different results. Additionally, generating a large volume of synthetic data can be time-consuming and computationally expensive when training machine learning models. This necessitates ensuring that resource-rich settings are available to train the models over an adequate number of epochs.
+
+
 \section{Conclusion}
 
 
