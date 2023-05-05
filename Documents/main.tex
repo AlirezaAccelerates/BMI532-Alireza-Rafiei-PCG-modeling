@@ -124,7 +124,7 @@ To train and assess the performance of the machine learning models, we partition
 
 \par The DeepCovNet model was not able to show an acceptable performance as it could not learn the desirable patterns to distinguish murmur cases from the PCG records. Its performance remained roughly the same when trained on both the original and synthetic datasets, with an AUC of approximately 0.5, which is equivalent to random guessing. In contrast, the developed CNN showed a significant improvement when trained on the synthetic data, achieving an AUC of 0.563 and a sensitivity of 0.382, as opposed to an AUC of 0.526 and a sensitivity of 0.336 when trained on the original data. The VGG-16 had roughly the same accuracy, f1-score, and sensitivity when trained on the original data, but there was an increase in specificity metrics when it was trained on the synthetic data. The InceptionTime model outperformed all other models in both training scenarios. It achieved an AUC of 0.673 and an accuracy of 0.769 when trained on the original data, while it reached an AUC of 0.691 and an accuracy of 0.774 when trained on the synthetic data.
 
-\par Figure \ref{fig:ROC} depicts the ROC curves for all machine learning models under both training scenarios. The lighter curves represent the test results of various learning models trained on the original and synthetic data, while the bold curve illustrates the average results of the four machine learning models across the two training scenarios. As can be clearly observed, the average performance of the models trained using synthetic data is marginally superior to that of their original counterparts.
+\par Figure \ref{fig:ROC} depicts the ROC curves for all machine learning models under both training scenarios. The lighter curves represent the test results of various learning models trained on the original and synthetic data, while the bold curve illustrates the average results of the four machine learning models across the two training scenarios. As can be clearly observed, the average performance of the models trained using synthetic data is marginally superior to that of their original counterparts. Figure \ref{fig:ROCs} illustrates the distinct ROC curves for each of the developed machine learning models. The DeepConvNet and VGG-16 models exhibit remarkably similar curve trajectories, whereas the differences between the two training scenarios for the CNN and InceptionTime models are more pronounced.
 
 \begin{table}[]
 \centering
@@ -148,6 +148,14 @@ InceptionTime                                   & 0.673      &0.769       &0.761
     \includegraphics[width=0.7\textwidth]{Documents/ROC.jpg}
     \caption{The ROC curve of the developed machine learning models on the original and synthetic data. The bolder lines represent the average of different models under the two scenarios.}
     \label{fig:ROC}
+
+\end{figure}
+
+\begin{figure}
+\centering
+    \includegraphics[width=0.7\textwidth]{Documents/ROCs.jpg}
+    \caption{The individual ROC curves for the developed machine learning models. a) DeepConvNet, b) CNN, c) VGG-16, d) InceptionTime.}
+    \label{fig:ROCs}
 
 \end{figure}
 
